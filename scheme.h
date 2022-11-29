@@ -4,7 +4,7 @@
 #include<cstdlib>
 using namespace std;
 
-#define precision 0.000
+#define precision 0.00001
 
 void print_binary(size_t a) {
     while(a>0) {
