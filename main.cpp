@@ -1,7 +1,18 @@
 #include "scheme.h"
 
 int main() {
-    Scheme s(5, 3);
+    Scheme s(3, 3);
+    s.suppress[1] = true;
+    // s.suppress[2] = true;
+    // s.suppress[4] = true;
+    // s.suppress[7] = true;
+    // s.p[0] = 0;
+    // s.p[1] = 0.45562;
+    // s.p[2] = 0.54438;
+    // s.p[3] = 0;
+    // s.update_value();
+    // s.print_value();
+
     s.randomize();
     s.update_value();
     // s.print_value();

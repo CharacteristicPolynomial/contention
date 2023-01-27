@@ -11,15 +11,22 @@ using namespace std;
 #define DIS_PRECISION 1E-8
 #define STEP_FACTOR 0.1
 
-void print_binary(size_t a) {
+void print_binary(size_t a, int k) {
+    int i = 0;
     while(a>0) {
         cout << a%2;
         a /= 2;
+        i++;
+    }
+    while(i < k) {
+        cout << 0;
+        i++;
     }
     cout << endl;
 }
 
 class Scheme {
+    public:
     int period;
     int n;
     size_t size;
@@ -27,10 +34,10 @@ class Scheme {
     double ettr; // expection of first success restricted to first period
     double ptr; // probability that the first success happens in the first period
     double value;
+    vector<bool> suppress; // indicators of whehter suppress one entry.
     vector<double> ettr_list; // set the first player to each pattern, what is the ettr now?
     vector<double> ptr_list; // set the first player to each pattern, what is the ptr now?
     vector<double> value_list;
-    public:
     // bool value_comparator(int a, int b) const { return value_list[a] > value_list[b]; }
     bool stable_fix() {
         /*
@@ -43,7 +50,7 @@ class Scheme {
         vector<size_t> index(size);
         for(size_t i=0; i<size; i++) 
             index[i] = i;
-        sort(index.begin(), index.end(), [&](size_t i1, size_t i2) {return value_list[i1] > value_list[i2];});
+        sort(index.begin(), index.end(), [&](size_t i1, size_t i2) {return !suppress[i2] && (suppress[i1] || value_list[i1] > value_list[i2]);});
         // for(size_t i=0; i<size; i++) {
         //     cout << "@@1 " <<  value_list[index[i]] << " : " << p[index[i]] << " : ";
         //     print_binary(index[i]);
@@ -108,6 +115,7 @@ class Scheme {
         ptr_list.resize(size);
         ettr_list.resize(size);
         value_list.resize(size);
+        suppress.resize(size, false);
     }
     void update_value() {
         // calculate ettr and ptr based on current vector p
@@ -184,7 +192,7 @@ class Scheme {
                  << setw(10) << ettr_list[i] << " " 
                  << setw(10) << ptr_list[i] << " " 
                  << setw(10) << value_list[i] << " : ";
-            print_binary(i);
+            print_binary(i, period);
         }
         cout << ettr << endl << ptr << endl;
         cout << value << endl;
@@ -192,7 +200,11 @@ class Scheme {
     void randomize() {
         srand((unsigned) time(NULL));
         for(int i=0; i<size; i++) {
-            p[i] = (rand()/(double)RAND_MAX);
+            if (suppress[i]) {
+                p[i] = 0;
+            } else {
+                p[i] = (rand()/(double)RAND_MAX);
+            }
         }
         normalize();
     }
